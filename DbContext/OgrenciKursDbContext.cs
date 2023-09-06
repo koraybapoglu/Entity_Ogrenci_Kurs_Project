@@ -16,7 +16,8 @@ namespace Entity_Ogrenci_Kurs_Project
 		public DbSet<Ders> Dersler { get; set; }
 		public DbSet<Kurs> Kurslar { get; set; }
 		public DbSet<OgrenciKurs> Ogrenci_Kurslar { get; set; }
-		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public DbSet<Admin> Admins { get; set; }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 			optionsBuilder.UseSqlServer("Server=DESKTOP-RN1V6Q9;Database=DbOgrenciKurs;Trusted_Connection=True;TrustServerCertificate=true;");
 		}
