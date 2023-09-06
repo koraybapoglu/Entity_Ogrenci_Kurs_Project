@@ -5,8 +5,10 @@ namespace Entity_Ogrenci_Kurs_Project
 {
 	internal class Program
 	{
+		
 		static void Main(string[] args)
 		{
+			AppSettings _settings = new();
 			bool isRunning = true;
 			while (isRunning) 
 			{
@@ -20,20 +22,25 @@ namespace Entity_Ogrenci_Kurs_Project
 				switch (Convert.ToInt32(Console.ReadLine()))
 				{
 					case 1:
+						Console.Clear();
 						OgrenciMenuServices.OgrenciMenu();
 						break;
 					case 2:
+						Console.Clear();
 						OgretmenMenuServices.OgretmenMenu();
 						break;
 					case 3:
-					
+						Console.Clear();
+						DersMenuServices.DersMenu();
 						break;
 					case 4:
-						
+						Console.Clear();
 						break;
 					case 5:
+						Console.Clear();
 						break;
 					case 6:
+						Console.Clear();
 						isRunning = false;
 						break;
 				}
