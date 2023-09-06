@@ -1,4 +1,5 @@
 ﻿using Entity_Ogrenci_Kurs_Project.Entities;
+using Entity_Ogrenci_Kurs_Project.Interfaces;
 using Entity_Ogrenci_Kurs_Project.MenuServices;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -9,114 +10,148 @@ using System.Threading.Tasks;
 
 namespace Entity_Ogrenci_Kurs_Project.DataServices
 {
-	public class OgretmenServices
+	public class OgretmenServices : ICrudService<Ogretmen>
 	{
-		OgrenciKursDbContext context = new();
-		public void OgretmenEkle()
+		public async Task AddAsync()
 		{
-			Ogretmen ogretekle = new();
+			Ogretmen Ogretmenekle = new();
 			Console.WriteLine("Lütfen Eklemek İstediğiniz Öğretmenin Adını Giriniz:");
-			ogretekle.OgretmenAdi = Console.ReadLine();
+			Ogretmenekle.OgretmenAdi = Console.ReadLine();
 			Console.WriteLine("Lütfen Eklemek İstediğiniz Öğretmenin Soyadını Giriniz:");
-			ogretekle.OgretmenSoyadi = Console.ReadLine();
+			Ogretmenekle.OgretmenSoyadi = Console.ReadLine();
 			Console.WriteLine("Lütfen Eklemek İstediğiniz Öğretmenin Doğum Tarihini Giriniz:");
-			ogretekle.OgretmenDogumTarihi = Convert.ToDateTime(Console.ReadLine());
-			if (ogretekle != null)
+			Ogretmenekle.OgretmenDogumTarihi = Convert.ToDateTime(Console.ReadLine());
+			try
 			{
-				context.Ogretmenler.AddAsync(ogretekle);
-				context.SaveChanges();
-			}
-			else
-			{
-				Console.WriteLine("Öğretmen Eklenirken Bir Hata Meydana Geldi Lütfen Tekrar Deneyiniz !");
-			}
-		}
-		public async void OgretmenleriGetir()
-		{
-			var ogretmenler = await (from Ogretmen in context.Ogretmenler
-									 select Ogretmen).ToListAsync();
-			if (ogretmenler != null)
-			{
-				foreach (var item in ogretmenler)
+				using (var context = new OgrenciKursDbContext())
 				{
-					Console.WriteLine($"-----------------------------------------------------\n" +
-						$"Öğretmen NO: {item.OgretmenID}\n" +
-						$"Öğretmen Adı: {item.OgretmenAdi}\n" +
-						$"Öğretmen Soyadı: {item.OgretmenSoyadi}\n" +
-						$"Öğretmen E-Mail: {item.OgretmenEmail}\n" +
-						$"Öğretmen Doğum Tarihi: {item.OgretmenDogumTarihi}\n" +
-						$"-----------------------------------------------------\n");
+					await context.Ogretmenler.AddAsync(Ogretmenekle);
+					await context.SaveChangesAsync();
 				}
 			}
-			else
+			catch (Exception ex)
 			{
-				Console.WriteLine("Öğretmenleri Getirirken Bir Hata Oluştu Lütfen Tekrar Deneyiniz !");
+				Console.WriteLine("Hata Oluştu: " + ex.Message);
 			}
 		}
-		public async void OgretmenGetir(int OgretmenID)
-		{
-			var ogretmen = await (from Ogretmen in context.Ogretmenler
-								  where Ogretmen.OgretmenID == OgretmenID
-								  select Ogretmen).ToListAsync();
-			if (ogretmen != null)
-			{
-				foreach (var item in ogretmen)
-				{
-					Console.WriteLine($"-----------------------------------------------------\n" +
-						$"Öğretmen NO: {item.OgretmenID}\n" +
-						$"Öğretmen Adı: {item.OgretmenAdi}\n" +
-						$"Öğretmen Soyadı: {item.OgretmenSoyadi}\n" +
-						$"Öğretmen E-Mail: {item.OgretmenEmail}\n" +
-						$"Öğretmen Doğum Tarihi: {item.OgretmenDogumTarihi}\n" +
-						$"-----------------------------------------------------\n");
-				}
-			}
-			else
-			{
-				Console.WriteLine("İstediğiniz Öğretmen Buluanamadı !");
-			}
-		}
-		public async void OgretmenSil()
-		{
-			OgretmenleriGetir();
-			Ogretmen ogretmensil = new();
-			Console.WriteLine("Lütfen Silmek İstediğiniz Öğretmenin NO Giriniz:");
-			ogretmensil.OgretmenID = int.Parse(Console.ReadLine());
-			if (ogretmensil != null)
-			{
-				context.Ogretmenler.Remove(ogretmensil);
-				context.SaveChanges();
-				Console.WriteLine("Öğretmen Başarılı Bir Şekilde Silindi !");
-			}
-			else
-			{
-				Console.WriteLine("Girmiş Olduğunuz Numaralı Öğretmen Bulunamadı !");
-			}
-		}
-		public async void OgretmenGuncelle()
-		{
-			OgretmenleriGetir();
 
-			Console.WriteLine("Lütfen Güncellemek İstediğiniz Öğrencinin Numarasını Giriniz:");
-			Ogretmen guncellenecekogretmen = context.Ogretmenler.FirstOrDefault(o => o.OgretmenID == int.Parse(Console.ReadLine()));
-			Console.Clear();
-			await Console.Out.WriteLineAsync("Seçili Öğretmen:" + "\n\n");
-			OgretmenGetir(guncellenecekogretmen.OgretmenID);
-			Console.WriteLine("Lütfen Öğretmenin Yeni Adını Giriniz:");
-			guncellenecekogretmen.OgretmenAdi = Console.ReadLine();
-			Console.WriteLine("Lütfen Öğretmenin Yeni Soyadını Giriniz:");
-			guncellenecekogretmen.OgretmenSoyadi = Console.ReadLine();
-			Console.WriteLine("Lütfen Öğretmenin Yeni E-mail Giriniz:");
-			guncellenecekogretmen.OgretmenEmail = Console.ReadLine();
-			Console.WriteLine("Lütfen Öğretmenin Yeni Doğum Tarihini Giriniz:");
-			guncellenecekogretmen.OgretmenDogumTarihi = Convert.ToDateTime(Console.ReadLine());
-			if (guncellenecekogretmen != null)
+		public async Task UpdateAsync()
+		{
+			try
 			{
-				await context.SaveChangesAsync();
+				using (var context = new OgrenciKursDbContext())
+				{
+					await GetAllAsync();
+					Console.WriteLine("Lütfen Güncellemek İstediğiniz Öğrencinin Numarasını Giriniz:");
+					Ogretmen guncellenecekogretmen = await context.Ogretmenler.FirstOrDefaultAsync(o => o.OgretmenID == int.Parse(Console.ReadLine()));
+					Console.Clear();
+					await Console.Out.WriteLineAsync("Seçili Öğretmen:" + "\n\n");
+					await GetByIdAsync(guncellenecekogretmen.OgretmenID);
+					Console.WriteLine("Lütfen Öğretmenin Yeni Adını Giriniz:");
+					guncellenecekogretmen.OgretmenAdi = Console.ReadLine();
+					Console.WriteLine("Lütfen Öğretmenin Yeni Soyadını Giriniz:");
+					guncellenecekogretmen.OgretmenSoyadi = Console.ReadLine();
+					Console.WriteLine("Lütfen Öğretmenin Yeni E-mail Giriniz:");
+					guncellenecekogretmen.OgretmenEmail = Console.ReadLine();
+					Console.WriteLine("Lütfen Öğretmenin Yeni Doğum Tarihini Giriniz:");
+					guncellenecekogretmen.OgretmenDogumTarihi = Convert.ToDateTime(Console.ReadLine());
+					await context.SaveChangesAsync();
+				}
 			}
-			else
+			catch (Exception ex)
 			{
-				Console.WriteLine("Bir Hata İle Karşılaşıldı !");
+
+				Console.WriteLine("Hata Oluştu: " + ex.Message);
+			}
+		}
+
+		public async Task DeleteAsync()
+		{
+			await GetAllAsync();
+			Ogretmen Ogretmensil = new();
+			Console.WriteLine("Lütfen Silmek İstediğiniz Öğretmenin NO Giriniz:");
+			Ogretmensil.OgretmenID = int.Parse(Console.ReadLine());
+			try
+			{
+				using (var context = new OgrenciKursDbContext())
+				{
+					context.Ogretmenler.Remove(Ogretmensil);
+					await context.SaveChangesAsync();
+					Console.WriteLine("Öğretmen Başarılı Bir Şekilde Silindi !");
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Hata Oluştu: " + ex.Message);
+			}
+		}
+
+		public async Task GetByIdAsync(int id)
+		{
+			try
+			{
+				using (var context = new OgrenciKursDbContext())
+				{
+					var ogretmen = await (from Ogretmen in context.Ogretmenler
+										  where Ogretmen.OgretmenID == id
+										  select Ogretmen).ToListAsync();
+					foreach (var item in ogretmen)
+					{
+						Console.WriteLine($"-----------------------------------------------------\n" +
+							$"Öğretmen NO: {item.OgretmenID}\n" +
+							$"Öğretmen Adı: {item.OgretmenAdi}\n" +
+							$"Öğretmen Soyadı: {item.OgretmenSoyadi}\n" +
+							$"Öğretmen E-Mail: {item.OgretmenEmail}\n" +
+							$"Öğretmen Doğum Tarihi: {item.OgretmenDogumTarihi}\n" +
+							$"-----------------------------------------------------\n");
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Hata Oluştu: " + ex.Message);
+			}
+		}
+
+		public async Task GetAllAsync()
+		{
+			try
+			{
+				using (var context = new OgrenciKursDbContext())
+				{
+					var ogretmenler = await (from Ogretmen in context.Ogretmenler
+											 select Ogretmen).ToListAsync();
+					foreach (var item in ogretmenler)
+					{
+						Console.WriteLine($"-----------------------------------------------------\n" +
+							$"Öğretmen NO: {item.OgretmenID}\n" +
+							$"Öğretmen Adı: {item.OgretmenAdi}\n" +
+							$"Öğretmen Soyadı: {item.OgretmenSoyadi}\n" +
+							$"Öğretmen E-Mail: {item.OgretmenEmail}\n" +
+							$"Öğretmen Doğum Tarihi: {item.OgretmenDogumTarihi}\n" +
+							$"-----------------------------------------------------\n");
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Hata Oluştu: " + ex.Message);
+			}
+		}
+
+		public async Task GetCountAsync()
+		{
+			try
+			{
+				using (var context = new OgrenciKursDbContext())
+				{
+					Console.WriteLine(await(from Ogretmen in context.Ogretmenler
+											select Ogretmen).CountAsync());
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Hata Oluştu: " + ex.Message);
 			}
 		}
 	}
