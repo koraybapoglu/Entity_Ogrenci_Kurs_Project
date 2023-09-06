@@ -9,7 +9,7 @@ namespace Entity_Ogrenci_Kurs_Project.MenuServices
 {
 	public class OgretmenMenuServices
 	{
-		public static void OgretmenMenu()
+		public async static void OgretmenMenu()
 		{
 			OgretmenServices ogretservices = new();
 			bool isRunning = true;
@@ -23,16 +23,16 @@ namespace Entity_Ogrenci_Kurs_Project.MenuServices
 				switch (int.Parse(Console.ReadLine()))
 				{
 					case 1:
-						ogretservices.OgretmenEkle();
+						await ogretservices.AddAsync();
 						break;
 					case 2:
-						ogretservices.OgretmenSil();
+						await ogretservices.DeleteAsync();
 						break;
 					case 3:
-						ogretservices.OgretmenGuncelle();
+						await ogretservices.UpdateAsync();
 						break;
 					case 4:
-						ogretservices.OgretmenleriGetir();
+						await ogretservices.GetAllAsync();
 						break;
 					case 5:
 						isRunning = false;
